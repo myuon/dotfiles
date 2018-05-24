@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Guake Terminal
+Exec=guake
+Comment=
+X-GNOME-Autostart-enabled=true

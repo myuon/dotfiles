@@ -1,0 +1,112 @@
+---
+- hosts: localhost
+  connection: local
+  
+  tasks:
+    - name: apt install
+      become: yes
+      apt: name={{item}} state=present update_cache=yes
+      with_items:
+        - git
+        - zsh
+        - emacs
+        - guake
+        - tmux
+        - language-pack-ja
+        - curl
+
+    - name: set zsh as default shell
+      become: yes
+      shell: chsh -s /bin/zsh $USER
+
+    - name: check zplug_path
+      stat:
+        path: ~/.zplug/.git
+      register: zplug_path
+
+    - name: install zplug
+      command: git clone https://github.com/zplug/zplug ~/.zplug
+      when: not zplug_path.stat.exists
+
+    - name: dotfiles under $HOME
+      file:
+        src: "{{ playbook_dir }}/files/{{ item }}"
+        dest: ~/{{ item }}
+        state: link
+        force: yes
+      with_items:
+        - .zshrc
+        - .zshenv
+        - .gitconfig
+        - .spacemacs
+        - .tmux.conf
+
+    - name: check stack command
+      shell: command stack
+      register: exist_stack
+      failed_when: false
+
+    - set_fact:
+        is_exist_stack: "{{ exist_stack is success }}"
+
+    - name: install haskell
+      shell: curl -sSL https://get.haskellstack.org/ | sh
+      when: is_exist_stack == false
+
+    - name: install zsh-git-prompt
+      git:
+        repo: https://github.com/olivierverdier/zsh-git-prompt.git
+        dest: ~/.zsh-git-prompt
+
+    - name: build zsh-git-prompt
+      shell: cd ~/.zsh-git-prompt && stack install
+
+    - name: check spacemacs_path
+      stat:
+        path: ~/.emacs.d/.git
+      register: spacemacs_path
+
+    - name: install spacemacs
+      command: git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
+      when: not spacemacs_path.stat.exists
+
+    - name: check source-code-pro path
+      stat:
+        path: ~/.local/share/fonts/adobe-fonts/source-code-pro
+      register: source_code_pro_path
+
+    - name: install source-code-pro font
+      command: "{{ item }}"
+      with_items:
+        - mkdir -p ~/.local/share/fonts/adobe-fonts/source-code-pro/
+        - git clone --branch release --depth 1 https://github.com/adobe-fonts/source-code-pro.git ~/.local/share/fonts/adobe-fonts/source-code-pro
+        - fc-cache -f -v ~/.local/share/fonts/adobe-fonts/source-code-pro
+      when: not source_code_pro_path.stat.exists
+
+    - name: start guake on startup
+      copy:
+        src: files/guake.desktop
+        dest: ~/.config/autostart/
+        force: no
+
+    - name: check rust command
+      shell: command rustup
+      register: exist_rust
+      failed_when: false
+
+    - set_fact:
+        is_exist_rust: "{{ exist_rust is success }}"
+
+    - name: install rust
+      shell: curl https://sh.rustup.rs -sSf | sh
+      when: is_exist_rust == false
+
+    - name: check ssh_key
+      stat:
+        path: ~/.ssh/id_rsa.pub
+      register: ssh_key_path
+
+    - name: ssh-keygen
+      shell: ssh-keygen -t rsa -C "ioi.joi.koi.loi@gmail.com" -f ~/.ssh/id_rsa
+      when: not ssh_key_path.stat.exists
+
