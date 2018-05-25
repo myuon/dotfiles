@@ -42,16 +42,13 @@
         - .tmux.conf
 
     - name: check stack command
-      shell: command stack
-      register: exist_stack
+      shell: stack --version
+      register: is_exist_stack
       failed_when: false
-
-    - set_fact:
-        is_exist_stack: "{{ exist_stack is success }}"
 
     - name: install haskell
       shell: curl -sSL https://get.haskellstack.org/ | sh
-      when: is_exist_stack == false
+      when: is_exist_stack.rc != 0
 
     - name: install zsh-git-prompt
       git:
@@ -90,23 +87,23 @@
         force: no
 
     - name: check rust command
-      shell: command rustup
-      register: exist_rust
+      shell: rustup --version
+      register: is_exist_rust
       failed_when: false
 
-    - set_fact:
-        is_exist_rust: "{{ exist_rust is success }}"
-
     - name: install rust
-      shell: curl https://sh.rustup.rs -sSf | sh
-      when: is_exist_rust == false
+      shell: |
+        wget https://sh.rustup.rs > /tmp/rust-install.sh
+        chmod +x /tmp/rust-install.sh
+        /tmp/rust-install.sh -y
+      when: is_exist_rust != 0
 
-    - name: check ssh_key
-      stat:
-        path: ~/.ssh/id_rsa.pub
-      register: ssh_key_path
+    # - name: check ssh_key
+    #   stat:
+    #     path: ~/.ssh/id_rsa.pub
+    #   register: ssh_key_path
 
-    - name: ssh-keygen
-      shell: ssh-keygen -t rsa -C "ioi.joi.koi.loi@gmail.com" -f ~/.ssh/id_rsa
-      when: not ssh_key_path.stat.exists
+    # - name: ssh-keygen
+    #   shell: ssh-keygen -t rsa -C "ioi.joi.koi.loi@gmail.com" -f ~/.ssh/id_rsa
+    #   when: not ssh_key_path.stat.exists
 
