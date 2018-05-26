@@ -92,10 +92,11 @@
       failed_when: false
 
     - name: install rust
-      shell: |
-        wget https://sh.rustup.rs > /tmp/rust-install.sh
-        chmod +x /tmp/rust-install.sh
-        /tmp/rust-install.sh -y
+      shell: "{{ item }}"
+      with_items:
+        - curl https://sh.rustup.rs -sSf > /tmp/rust-install.sh
+        - chmod +x /tmp/rust-install.sh
+        - /tmp/rust-install.sh -y
       when: is_exist_rust != 0
 
     # - name: check ssh_key
@@ -106,4 +107,7 @@
     # - name: ssh-keygen
     #   shell: ssh-keygen -t rsa -C "ioi.joi.koi.loi@gmail.com" -f ~/.ssh/id_rsa
     #   when: not ssh_key_path.stat.exists
+
+    - name: reload shell
+      shell: zsh -l
 
