@@ -97,6 +97,8 @@
         - curl https://sh.rustup.rs -sSf > /tmp/rust-install.sh
         - chmod +x /tmp/rust-install.sh
         - /tmp/rust-install.sh -y
+        - ~/.cargo/bin/cargo install racer
+        - ~/.cargo/bin/rustup component add rust-src
       when: is_exist_rust != 0
 
     # - name: check ssh_key

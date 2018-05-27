@@ -46,7 +46,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/vagrant"
 
   config.vm.hostname = "vagrant-vm"
-
+ 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
     # Customize the amount of memory on the VM:
     vb.memory = "2048"
   end
-  #
+
   # View the documentation for the provider you are using for more
   # information on available options.
   # Enable provisioning with a shell script. Additional provisioners such as
