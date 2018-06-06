@@ -53,7 +53,7 @@ values."
      ;; syntax-checking
      ;; version-control
      rust
-     haskell
+     ;; haskell
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -62,6 +62,7 @@ values."
    dotspacemacs-additional-packages
    '(
      multiple-cursors
+     intero
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -318,6 +319,8 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (set-fontset-font t 'japanese-jisx0208 "Noto Sans CJK JP")
+
+  (add-hook 'haskell-mode-hook 'intero-mode)
 
   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
