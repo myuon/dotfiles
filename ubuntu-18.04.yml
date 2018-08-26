@@ -41,6 +41,11 @@
         - .spacemacs
         - .tmux.conf
 
+    - name: Install nvm
+      shell: >
+        curl https://raw.githubusercontent.com/creationix/nvm/v0.7.0/install.sh | sh
+        creates=/home/{{ ansible_user_id }}/.nvm/nvm.sh
+
     - name: check stack command
       shell: stack --version
       register: is_exist_stack
